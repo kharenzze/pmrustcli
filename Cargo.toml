@@ -8,3 +8,4 @@ edition = "2018"
 [dependencies]
 bson = "2.0.0-beta.2"
 serde = "1.0.117"
+dirs = "1.0.5"
