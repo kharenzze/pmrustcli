@@ -1,18 +1,9 @@
-use bson::{bson};
-use serde::{Serialize, Deserialize};
-
-#[derive(Serialize, Deserialize)]
-struct AppConfig {
-    token: String,
-}
+mod appconfig;
+use appconfig::AppConfig;
 
 fn main() {
     println!("Hello, world!");
-    let a = bson!({
-        "token": "tokenvalue",
-        "tokewen": "tokenval"
-    });
+    let conf = AppConfig::load();
 
-    let parsed: AppConfig = bson::from_bson(a).unwrap();
-    println!("{}", &parsed.token);
+    println!("{}", &conf.token);
 }
