@@ -1,6 +1,9 @@
 use dirs;
-use std::{fs::File, path::PathBuf};
+use std::fs::{File, OpenOptions};
+use std::path::PathBuf;
+use std::io::{BufWriter, Write};
 use serde::{Serialize, Deserialize};
+//use bson::
 
 #[derive(Serialize, Deserialize)]
 pub struct AppConfig {
@@ -33,5 +36,18 @@ impl AppConfig {
         AppConfig {
             token: "asd".to_string()
         }
+    }
+
+    pub fn save(&self) {
+        let path = Self::get_file_path();
+        let file = OpenOptions::new().read(false).write(true).open(path);
+        if file.is_err() {
+            panic!("Cannot open config file");
+        }
+        let file = file.unwrap();
+        let redacted_bson = bson::to_bson(self).unwrap();
+        let mut buffer = BufWriter::new(file);
+        write!(&mut buffer, "{:?}", &redacted_bson);
+        //buffer.write_all(redacted_bson.)
     }
 }
