@@ -1,5 +1,5 @@
 use dirs;
-use std::fs::File;
+use std::{fs::File, path::PathBuf};
 use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize)]
@@ -14,14 +14,19 @@ impl AppConfig {
         }
     }
 
-    pub fn load() -> Self {
+    fn get_file_path() -> PathBuf {
         let home_path = dirs::home_dir();
         if home_path.is_none() {
             panic!("Cannot find home path");
         }
         let mut home_path = home_path.unwrap();
         home_path.push(".pmcli");
-        let file = File::open(home_path);
+        home_path
+    }
+
+    pub fn load() -> Self {
+        let path = Self::get_file_path();
+        let file = File::open(path);
         if file.is_err() {
             return Self::empty()
         }
