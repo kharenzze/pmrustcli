@@ -205,6 +205,7 @@ version = "0.1.0"
 dependencies = [
  "bson",
  "dirs",
+ "seahorse",
  "serde",
 ]
 
@@ -307,6 +308,12 @@ name = "ryu"
 version = "1.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "71d301d4193d031abdd79ff7e3dd721168a9572ef3fe51a1517aba235bd8f86e"
+
+[[package]]
+name = "seahorse"
+version = "1.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8bee1fe454786f1d236a07cb3d3adcbaca96e9ba42d23bc58de059937bb059bd"
 
 [[package]]
 name = "serde"
