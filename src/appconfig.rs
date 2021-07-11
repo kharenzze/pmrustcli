@@ -36,7 +36,7 @@ impl AppConfig {
         let file = file.unwrap();
         let mut buf = BufReader::new(file);
         let doc = Document::from_reader(&mut buf)
-                            .expect("error reading doc");
+            .expect("error reading doc");
 
         bson::from_document(doc).unwrap_or(Self::empty())
     }
