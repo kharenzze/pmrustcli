@@ -41,6 +41,6 @@ fn me_command() -> Command {
         .action(me_action)
 }
 
-fn me_action(c: &Context) {
+fn me_action(_c: &Context) {
     println!("Me");
 } 
