@@ -4,6 +4,8 @@ mod pmrest;
 use seahorse::{App, Context, Command};
 use std::env;
 use appconfig::AppConfig;
+use pmrest::PMRest;
+use futures::executor::block_on;
 
 #[tokio::main]
 async fn main() {
@@ -43,6 +45,13 @@ fn me_command() -> Command {
         .action(me_action)
 }
 
+
 fn me_action(_c: &Context) {
-    println!("Me");
+    let conf = AppConfig::load();
+    let rest = PMRest::new(&conf.token);
+    let me = block_on(rest.get_me());
+    match me {
+        Ok(m) => println!("{:?}", &m),
+        _ => panic!("Something went wrong")
+    }
 } 
