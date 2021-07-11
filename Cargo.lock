@@ -636,6 +636,7 @@ version = "0.1.0"
 dependencies = [
  "bson",
  "dirs",
+ "http",
  "reqwest",
  "seahorse",
  "serde",
