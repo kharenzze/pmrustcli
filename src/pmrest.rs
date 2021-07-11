@@ -5,6 +5,12 @@ pub struct PMRest {
 
 type PMRestResult = Result<serde_json::Value, Box<dyn std::error::Error>>;
 
+macro_rules! PM_BASE {
+    ($path:expr) => {
+        concat!("https://sync.appfluence.com", $path);
+    };
+}
+
 impl PMRest {
     fn get_headers(token: &String) -> HeaderMap {
         if token.len() == 0 {
@@ -28,7 +34,7 @@ impl PMRest {
         }
     }
     pub async fn get_me(&self) -> PMRestResult {
-        let json: serde_json::Value = self.client.get("https://sync.appfluence.com/api/v1/me")
+        let json: serde_json::Value = self.client.get(PM_BASE!("/api/v1/me"))
             .send()
             .await?
             .json()
