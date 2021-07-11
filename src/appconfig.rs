@@ -58,8 +58,7 @@ impl AppConfig {
             _ => panic!("bsom must be a document")
         };
         let mut buffer = BufWriter::new(file);
-        doc.to_writer(&mut buffer).expect("write ok");
-        //write!(&mut buffer, "{:?}", &redacted_bson);
-        //buffer.write_all(redacted_bson.)
+        doc.to_writer(&mut buffer).expect("error writing buffer");
+        buffer.flush().expect("error writing buffer");
     }
 }
