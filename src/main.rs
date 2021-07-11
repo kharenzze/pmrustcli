@@ -5,7 +5,8 @@ use seahorse::{App, Context, Command};
 use std::env;
 use appconfig::AppConfig;
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let args: Vec<String> = env::args().collect();
     let app = App::new(env!("CARGO_PKG_NAME"))
         .description(env!("CARGO_PKG_DESCRIPTION"))
