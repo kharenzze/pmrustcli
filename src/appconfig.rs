@@ -40,7 +40,23 @@ impl AppConfig {
 
     pub fn save(&self) {
         let path = Self::get_file_path();
-        let file = OpenOptions::new().read(false).write(true).open(path);
+        /*
+        let file: Result<File, std::io::Error> = {
+            let f = OpenOptions::new().read(false).write(true).open(path);
+            if f.is_ok() {
+                return f;
+            }
+            File::create(path)
+        };
+         */
+        let file: Result<File, std::io::Error> = {
+            let f = OpenOptions::new().read(false).write(true).open(&path);
+            if f.is_ok() {
+                f
+            } else {
+                File::create(&path)
+            }
+        };
         if file.is_err() {
             panic!("Cannot open config file");
         }
