@@ -12,6 +12,7 @@ fn main() {
         .version(env!("CARGO_PKG_VERSION"))
         .usage("cli [args]")
         .action(|_| println!("Welcome to pmrustcli"))
+        .command(me_command())
         .command(token_command());
 
     app.run(args);
@@ -31,4 +32,15 @@ fn token_action(c: &Context) {
     conf.token = token;
     conf.save();
     println!("Token saved");
+} 
+
+fn me_command() -> Command {
+     Command::new("me")
+        .description("whoami")
+        .usage("cli me")
+        .action(me_action)
+}
+
+fn me_action(c: &Context) {
+    println!("Me");
 } 
