@@ -3,7 +3,7 @@ use std::fs::{File, OpenOptions};
 use std::path::PathBuf;
 use std::io::{BufWriter, Write};
 use serde::{Serialize, Deserialize};
-//use bson::
+use bson::{Bson, Document};
 
 #[derive(Serialize, Deserialize)]
 pub struct AppConfig {
@@ -40,15 +40,6 @@ impl AppConfig {
 
     pub fn save(&self) {
         let path = Self::get_file_path();
-        /*
-        let file: Result<File, std::io::Error> = {
-            let f = OpenOptions::new().read(false).write(true).open(path);
-            if f.is_ok() {
-                return f;
-            }
-            File::create(path)
-        };
-         */
         let file: Result<File, std::io::Error> = {
             let f = OpenOptions::new().read(false).write(true).open(&path);
             if f.is_ok() {
@@ -62,8 +53,13 @@ impl AppConfig {
         }
         let file = file.unwrap();
         let redacted_bson = bson::to_bson(self).unwrap();
+        let doc: Document = match redacted_bson {
+            Bson::Document(d) => d,
+            _ => panic!("bsom must be a document")
+        };
         let mut buffer = BufWriter::new(file);
-        write!(&mut buffer, "{:?}", &redacted_bson);
+        doc.to_writer(&mut buffer).expect("write ok");
+        //write!(&mut buffer, "{:?}", &redacted_bson);
         //buffer.write_all(redacted_bson.)
     }
 }
