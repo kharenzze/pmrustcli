@@ -3,7 +3,7 @@ pub struct PMRest {
     client: reqwest::Client
 }
 
-type PMRestResult = Result<(), Box<dyn std::error::Error>>;
+type PMRestResult = Result<serde_json::Value, Box<dyn std::error::Error>>;
 
 impl PMRest {
     fn get_headers(token: &String) -> HeaderMap {
@@ -27,7 +27,12 @@ impl PMRest {
             client
         }
     }
-    pub fn get_me(&self) {
-
+    pub async fn get_me(&self) -> PMRestResult {
+        let json: serde_json::Value = self.client.get("https://sync.appfluence.com/api/v1/me")
+            .send()
+            .await?
+            .json()
+            .await?;
+        Ok(json)
     }
 }
