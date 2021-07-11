@@ -1,7 +1,7 @@
 use dirs;
 use std::fs::{File, OpenOptions};
 use std::path::PathBuf;
-use std::io::{BufWriter, BufReader, Write, Read};
+use std::io::{BufWriter, BufReader, Write};
 use serde::{Serialize, Deserialize};
 use bson::{Bson, Document};
 
