@@ -1,7 +1,7 @@
 use dirs;
 use std::fs::{File, OpenOptions};
 use std::path::PathBuf;
-use std::io::{BufWriter, Write};
+use std::io::{BufWriter, BufReader, Write, Read};
 use serde::{Serialize, Deserialize};
 use bson::{Bson, Document};
 
@@ -33,9 +33,12 @@ impl AppConfig {
         if file.is_err() {
             return Self::empty()
         }
-        AppConfig {
-            token: "asd".to_string()
-        }
+        let file = file.unwrap();
+        let mut buf = BufReader::new(file);
+        let doc = Document::from_reader(&mut buf)
+                            .expect("error reading doc");
+
+        bson::from_document(doc).unwrap_or(Self::empty())
     }
 
     pub fn save(&self) {
