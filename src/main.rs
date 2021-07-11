@@ -1,4 +1,5 @@
 mod appconfig;
+mod pmrest;
 
 use seahorse::{App, Context, Command};
 use std::env;
