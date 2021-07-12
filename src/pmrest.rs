@@ -3,7 +3,13 @@ pub struct PMRest {
     client: reqwest::Client
 }
 
-type PMRestResult = Result<serde_json::Value, Box<dyn std::error::Error>>;
+type JSON = serde_json::Value;
+
+enum PMResponse {
+    Me(JSON) 
+}
+
+type PMRestResult = Result<PMResponse, Box<dyn std::error::Error>>;
 
 macro_rules! PM_BASE {
     ($path:expr) => {
@@ -34,11 +40,11 @@ impl PMRest {
         }
     }
     pub async fn get_me(&self) -> PMRestResult {
-        let json: serde_json::Value = self.client.get(PM_BASE!("/api/v1/me"))
+        let json: JSON = self.client.get(PM_BASE!("/api/v1/me"))
             .send()
             .await?
             .json()
             .await?;
-        Ok(json)
+        Ok(PMResponse::Me(json))
     }
 }
