@@ -50,8 +50,6 @@ fn me_action(_c: &Context) {
     let conf = AppConfig::load();
     let rest = PMRest::new(&conf.token);
     let me = block_on(rest.get_me());
-    match me {
-        Ok(m) => println!("{:?}", &m),
-        _ => panic!("Something went wrong")
-    }
+    let me = me.expect("Cannot decode");
+    println!("{:?}", &me);
 } 
