@@ -45,7 +45,6 @@ fn me_command() -> Command {
         .action(me_action)
 }
 
-
 fn me_action(_c: &Context) {
     let conf = AppConfig::load();
     let rest = PMRest::new(&conf.token);
