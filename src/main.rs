@@ -1,12 +1,11 @@
 mod appconfig;
-mod pmrest;
+mod pm;
 
 use seahorse::{App, Context, Command};
 use std::env;
 use appconfig::AppConfig;
-use pmrest::PMRest;
+use pm::rest::{PMRest, PMResponse};
 use futures::executor::block_on;
-use pmrest::PMResponse;
 
 #[tokio::main]
 async fn main() {
