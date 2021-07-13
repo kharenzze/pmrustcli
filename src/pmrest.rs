@@ -1,11 +1,12 @@
-use http::{HeaderMap, HeaderValue};
+use http::{HeaderMap, HeaderValue, StatusCode};
+use reqwest::{Response, Error};
 pub struct PMRest {
     client: reqwest::Client
 }
 
 type JSON = serde_json::Value;
 
-enum PMResponse {
+pub enum PMResponse {
     Me(JSON) 
 }
 
@@ -47,11 +48,27 @@ impl PMRest {
     }
 
     async fn execute_request(&self, url: &str) -> PMRestResultUnwrapped {
-        let json: JSON = self.client.get(url)
+        let res = self.client.get(url)
             .send()
-            .await?
+            .await;
+
+        Self::auth_check(&res);
+        let res = res?;
+        
+        let json: JSON = res
             .json()
             .await?;
         Ok(json)
+    }
+
+    fn auth_check(response_result: &Result<Response, Error>) {
+        if response_result.is_ok() {
+            let res = response_result.as_ref().unwrap();
+            let status = res.status();
+            if status == StatusCode::UNAUTHORIZED {
+                println!("{}", status);
+                panic!();
+            }
+        }
     }
 }

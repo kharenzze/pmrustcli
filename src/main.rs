@@ -6,6 +6,7 @@ use std::env;
 use appconfig::AppConfig;
 use pmrest::PMRest;
 use futures::executor::block_on;
+use pmrest::PMResponse;
 
 #[tokio::main]
 async fn main() {
@@ -50,6 +51,6 @@ fn me_action(_c: &Context) {
     let conf = AppConfig::load();
     let rest = PMRest::new(&conf.token);
     let me = block_on(rest.get_me());
-    let me = me.expect("Cannot decode");
+    let PMResponse::Me(me ) = me.expect("Cannot decode");
     println!("{:?}", &me);
 } 
