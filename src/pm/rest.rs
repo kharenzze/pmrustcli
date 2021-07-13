@@ -1,17 +1,13 @@
 use http::{HeaderMap, HeaderValue, StatusCode};
 use reqwest::{Response, Error};
+use crate::pm::models::me::{Me};
 pub struct PMRest {
     client: reqwest::Client
 }
 
 type JSON = serde_json::Value;
-
-pub enum PMResponse {
-    Me(JSON) 
-}
-
-type PMRestResult = Result<PMResponse, Box<dyn std::error::Error>>;
-type PMRestResultUnwrapped = Result<JSON, Box<dyn std::error::Error>>;
+type DError = Box<dyn std::error::Error>;
+type PMRestResultUnwrapped = Result<JSON, DError>;
 
 macro_rules! PM_BASE {
     ($path:expr) => {
@@ -42,9 +38,9 @@ impl PMRest {
         }
     }
 
-    pub async fn get_me(&self) -> PMRestResult {
+    pub async fn get_me(&self) -> Result<Me, DError> {
         let json: JSON = self.execute_request(PM_BASE!("/api/v1/me")).await?;
-        Ok(PMResponse::Me(json))
+        Ok(Me(json))
     }
 
     async fn execute_request(&self, url: &str) -> PMRestResultUnwrapped {
