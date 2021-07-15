@@ -12,7 +12,7 @@ pub struct SimpleItem {
 }
 
 impl SimpleItem {
-  pub fn empty() -> Self {
+  pub fn _empty() -> Self {
     SimpleItem {
       name: "".to_string(),
       quadrant: 0,

@@ -1,3 +1,6 @@
+use serde::Deserialize;
+use serde::de::DeserializeOwned;
+use serde_json::{Result as JSON_Result};
 use urlencoding::encode;
 use std::collections::HashMap;
 use http::{HeaderMap, HeaderValue, StatusCode};
@@ -54,7 +57,7 @@ impl PMRest {
         Ok(item)
     }
 
-    pub async fn search(&self, text: &str) -> Result<SimpleItem, DError> {
+    pub async fn search(&self, text: &str) -> Result<PMObjectsResponse<SimpleItem>, DError> {
         let mut params = QueryParams::new();
         params.set("state_le", "0");
         params.set("summaries", "1");
@@ -69,9 +72,8 @@ impl PMRest {
         println!("{}", url);
 
         let json: JSON = self.execute_request(&url).await?;
-        let mut single = json.get("objects").expect("Must exist").as_array().expect("Must array").get(0).expect("There's one");
-        let item = SimpleItem::from_json(single.clone())?;
-        Ok(item)
+        let result: PMObjectsResponse<SimpleItem> = PMObjectsResponse::from_json(json)?;
+        Ok(result)
     }
 
     async fn execute_request(&self, url: &str) -> PMRestResultUnwrapped {
@@ -127,4 +129,25 @@ impl QueryParams {
         }
         r
     }
+}
+
+#[derive(Deserialize, Debug)]
+pub struct APIMeta {
+    limit: usize,
+    offset: usize,
+    total_count: usize,
+    requested_time: f64,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct PMObjectsResponse<T> {
+    pub meta: APIMeta,
+    pub objects: Vec<T>,
+}
+
+impl <T: DeserializeOwned> PMObjectsResponse<T> {
+  pub fn from_json(json: JSON) -> JSON_Result<Self> {
+    let i: Self = serde_json::from_value(json)?;
+    Ok(i)
+  }
 }

@@ -83,8 +83,10 @@ fn search_action(c: &Context) {
     let conf = AppConfig::load();
     let rest = PMRest::new(&conf.token);
     let result = block_on(rest.search(&text));
-    let item = result.expect("it's an item");
-    println!("{}", &item);
+    let result = result.expect("it's an item");
+    for i in &result.objects {
+        println!("{}", i);
+    }
     /*
     let conf = AppConfig::load();
     let rest = PMRest::new(&conf.token);
