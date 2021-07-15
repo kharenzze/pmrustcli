@@ -69,7 +69,8 @@ impl PMRest {
         println!("{}", url);
 
         let json: JSON = self.execute_request(&url).await?;
-        let item = SimpleItem::from_json(json)?;
+        let mut single = json.get("objects").expect("Must exist").as_array().expect("Must array").get(0).expect("There's one");
+        let item = SimpleItem::from_json(single.clone())?;
         Ok(item)
     }
 
