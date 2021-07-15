@@ -1,6 +1,7 @@
 use http::{HeaderMap, HeaderValue, StatusCode};
 use reqwest::{Response, Error};
 use crate::pm::models::me::{Me};
+use crate::pm::models::item::{SimpleItem};
 pub struct PMRest {
     client: reqwest::Client
 }
@@ -41,6 +42,14 @@ impl PMRest {
     pub async fn get_me(&self) -> Result<Me, DError> {
         let json: JSON = self.execute_request(PM_BASE!("/api/v1/me")).await?;
         Ok(Me(json))
+    }
+
+    pub async fn get_item(&self, id: u64) -> Result<SimpleItem, DError> {
+        let base = PM_BASE!("/api/v1/item_summary");
+        let url = format!("{}/{}", base, id);
+        let json: JSON = self.execute_request(&url).await?;
+        let item = SimpleItem::from_JSON(json)?;
+        Ok(item)
     }
 
     async fn execute_request(&self, url: &str) -> PMRestResultUnwrapped {

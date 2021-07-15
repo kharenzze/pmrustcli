@@ -17,6 +17,7 @@ async fn main() {
         .usage("cli [args]")
         .action(|_| println!("Welcome to pmrustcli"))
         .command(me_command())
+        .command(item_command())
         .command(token_command());
 
     app.run(args);
@@ -51,4 +52,20 @@ fn me_action(_c: &Context) {
     let me = block_on(rest.get_me());
     let me = me.expect("Cannot decode");
     println!("{}", &me);
+} 
+
+fn item_command() -> Command {
+     Command::new("item")
+        .description("Get an item")
+        .usage("cli item [id]")
+        .action(item_action)
+}
+
+fn item_action(c: &Context) {
+    let conf = AppConfig::load();
+    let id: u64 = c.args.get(0).expect("Missing id").parse().expect("Should be an integer");
+    let rest = PMRest::new(&conf.token);
+    let item = block_on(rest.get_item(id));
+    let item = item.expect("Error getting item");
+    println!("{}", &item);
 } 
