@@ -1,3 +1,5 @@
+use urlencoding::encode;
+use std::collections::HashMap;
 use http::{HeaderMap, HeaderValue, StatusCode};
 use reqwest::{Response, Error};
 use crate::pm::models::me::{Me};
@@ -48,14 +50,26 @@ impl PMRest {
         let base = PM_BASE!("/api/v1/item_summary");
         let url = format!("{}/{}", base, id);
         let json: JSON = self.execute_request(&url).await?;
-        let item = SimpleItem::from_JSON(json)?;
+        let item = SimpleItem::from_json(json)?;
         Ok(item)
     }
 
     pub async fn search(&self, text: &str) -> Result<SimpleItem, DError> {
-        let url = PM_BASE!("/api/v1/me/search");
+        let mut params = QueryParams::new();
+        params.set("state_le", "0");
+        params.set("summaries", "1");
+        params.set("limit", "20");
+        params.set("order_by", "-lastModifiedTimestamp");
+        params.set("offset", "0");
+        params.set("q", &encode(text).to_string());
+
+        let params = params.to_string();
+        let mut url = PM_BASE!("/api/v1/me/search").to_string();
+        url.push_str(&params);
+        println!("{}", url);
+
         let json: JSON = self.execute_request(&url).await?;
-        let item = SimpleItem::from_JSON(json)?;
+        let item = SimpleItem::from_json(json)?;
         Ok(item)
     }
 
@@ -72,7 +86,6 @@ impl PMRest {
             .await?;
         Ok(json)
     }
-
     fn auth_check(response_result: &Result<Response, Error>) {
         if response_result.is_ok() {
             let res = response_result.as_ref().unwrap();
@@ -82,5 +95,35 @@ impl PMRest {
                 panic!();
             }
         }
+    }
+}
+
+type QParams = HashMap<String, String>;
+struct QueryParams {
+    map: QParams
+}
+
+impl QueryParams {
+    pub fn new() -> Self {
+        Self {
+            map: QParams::new()
+        }
+    }
+
+    pub fn set(&mut self, key: &str, value: &str) {
+        self.map.insert(key.to_string(), value.to_string());
+    }
+
+    pub fn to_string(&self) -> String {
+        let mut r = "?".to_string();
+        for (k ,v) in &self.map {
+            r.push_str(&format!("{}={}&", k.as_str() , v.as_str()));
+        }
+        if r.len() != 1 {
+            r.pop();
+        } else {
+            return "".to_string();
+        }
+        r
     }
 }

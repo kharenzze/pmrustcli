@@ -80,6 +80,9 @@ fn search_command() -> Command {
 
 fn search_action(c: &Context) {
     let text: String = c.args.get(0).expect("Missing text").parse().expect("Should be an integer");
+    let conf = AppConfig::load();
+    let rest = PMRest::new(&conf.token);
+    let result = block_on(rest.search(&text));
     println!("{}", &text);
     /*
     let conf = AppConfig::load();

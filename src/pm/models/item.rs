@@ -20,7 +20,7 @@ impl SimpleItem {
     }
   }
 
-  pub fn from_JSON(json: JSON) -> JSON_Result<Self> {
+  pub fn from_json(json: JSON) -> JSON_Result<Self> {
     let i: Self = serde_json::from_value(json)?;
     Ok(i)
   }
