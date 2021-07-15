@@ -52,6 +52,13 @@ impl PMRest {
         Ok(item)
     }
 
+    pub async fn search(&self, text: &str) -> Result<SimpleItem, DError> {
+        let url = PM_BASE!("/api/v1/me/search");
+        let json: JSON = self.execute_request(&url).await?;
+        let item = SimpleItem::from_JSON(json)?;
+        Ok(item)
+    }
+
     async fn execute_request(&self, url: &str) -> PMRestResultUnwrapped {
         let res = self.client.get(url)
             .send()
