@@ -18,6 +18,7 @@ async fn main() {
         .action(|_| println!("Welcome to pmrustcli"))
         .command(me_command())
         .command(item_command())
+        .command(search_command())
         .command(token_command());
 
     app.run(args);
@@ -68,4 +69,23 @@ fn item_action(c: &Context) {
     let item = block_on(rest.get_item(id));
     let item = item.expect("Error getting item");
     println!("{}", &item);
+} 
+
+fn search_command() -> Command {
+     Command::new("search")
+        .description("Search items by text")
+        .usage("cli search \"text\"")
+        .action(search_action)
+}
+
+fn search_action(c: &Context) {
+    let text: String = c.args.get(0).expect("Missing text").parse().expect("Should be an integer");
+    println!("{}", &text);
+    /*
+    let conf = AppConfig::load();
+    let rest = PMRest::new(&conf.token);
+    let me = block_on(rest.get_me());
+    let me = me.expect("Cannot decode");
+    println!("{}", &me);
+     */
 } 
