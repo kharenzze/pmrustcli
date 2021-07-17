@@ -52,6 +52,17 @@ impl PMRest {
         Ok(item)
     }
 
+    pub async fn get_alerts(&self) -> Result<PMObjectsResponse<SimpleItem>, DError> {
+        let mut params = QueryParams::new();
+        params.set("summaries", "1");
+        let base = PM_BASE!("/api/v2/item/attention");
+        let mut url: String = base.to_string();
+        url.push_str(&params.to_string());
+        let json: JSON = self.execute_request(&url).await?;
+        let result: PMObjectsResponse<SimpleItem> = PMObjectsResponse::from_json(json)?;
+        Ok(result)
+    }
+
     pub async fn search(&self, text: &str) -> Result<PMObjectsResponse<SimpleItem>, DError> {
         let mut params = QueryParams::new();
         params.set("state_le", "0");
