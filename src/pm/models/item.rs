@@ -56,6 +56,16 @@ impl SimpleItem {
     let i: Self = serde_json::from_value(json)?;
     Ok(i)
   }
+
+  pub fn detailed_print(&self) {
+    println!("{}", &self.name);
+    println!("{}% completed", &self.completion_percentage);
+    println!("Quadrant {}", &self.quadrant);
+    if self.creator_username.is_some() {
+      let name = self.creator_username.as_ref().unwrap();
+      println!("Created by {}", name);
+    }
+  }
 }
 
 impl fmt::Display for SimpleItem {

@@ -72,7 +72,7 @@ fn item_action(c: &Context) {
     let rest = get_api();
     let item = block_on(rest.get_item(id));
     let item = item.expect("Error getting item");
-    println!("{}", &item);
+    item.detailed_print();
 } 
 
 fn search_command() -> Command {
