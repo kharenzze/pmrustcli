@@ -87,21 +87,22 @@ impl SimpleItem {
 
   pub fn get_start_datetime(&self) -> Option<DateTime<Local>> {
     let t = self.start_date.as_ref()?;
-    Some(secs_timestamp_to_datetime(t.into()))
+    Some(t.into())
   }
 
   pub fn get_due_datetime(&self) -> Option<DateTime<Local>> {
     let t = self.due_date.as_ref()?;
-    Some(secs_timestamp_to_datetime(t.into()))
+    Some(t.into())
   }
 
   pub fn get_creation_datetime(&self) ->DateTime<Local> {
     let ref t = self.creation_date;
-    secs_timestamp_to_datetime(t.into())
+    t.into()
   }
 
   pub fn get_last_modified_datetime(&self) -> DateTime<Local> {
-    secs_timestamp_to_datetime((&self.last_modified_timestamp).into())
+    let ref t = self.last_modified_timestamp;
+    t.into()
   }
 
   pub fn from_json(json: JSON) -> JSON_Result<Self> {
