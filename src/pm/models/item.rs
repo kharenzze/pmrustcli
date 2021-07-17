@@ -8,6 +8,25 @@ use crate::{PM_BASE};
 
 type JSON = serde_json::Value;
 
+
+#[derive(Deserialize, Debug)]
+#[serde(untagged)]
+enum Timestamp {
+  String(String),
+  Integer(u64),
+  Float(f64),
+}
+
+impl From<&Timestamp> for u64 {
+  fn from(item: &Timestamp) -> Self {
+    match item {
+      Timestamp::Float(f) => *f as u64,
+      Timestamp::String(s) => s.parse().unwrap(),
+      Timestamp::Integer(i) => *i,
+    }
+  }
+}
+
 #[derive(Serialize_repr, Deserialize_repr, PartialEq, Debug)]
 #[repr(u8)]
 enum ItemState {
@@ -39,12 +58,12 @@ pub struct SimpleItem {
   completion_date: Option<u64>,
   #[serde(rename = "creationDate")]
   creation_date: u64,
-  timestamp: u64,
+  timestamp: Timestamp,
   #[serde(rename = "lastModifiedTimestamp")]
-  last_modified_timestamp: u64,
+  last_modified_timestamp: Timestamp,
   #[serde(rename = "allDay")]
   all_day: bool,
-  projects: Vec<String>,
+  projects: Option<Vec<String>>,
 }
 
 fn secs_timestamp_to_datetime(timestamp: u64) -> DateTime<Local> {
@@ -75,7 +94,7 @@ impl SimpleItem {
   }
 
   pub fn get_last_modified_datetime(&self) -> DateTime<Local> {
-    secs_timestamp_to_datetime(self.last_modified_timestamp)
+    secs_timestamp_to_datetime((&self.last_modified_timestamp).into())
   }
 
   pub fn from_json(json: JSON) -> JSON_Result<Self> {
