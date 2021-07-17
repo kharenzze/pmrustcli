@@ -8,7 +8,6 @@ use crate::{PM_BASE};
 
 type JSON = serde_json::Value;
 
-
 #[derive(Deserialize, Debug)]
 #[serde(untagged)]
 enum Timestamp {
@@ -24,6 +23,13 @@ impl From<&Timestamp> for u64 {
       Timestamp::String(s) => s.parse().unwrap(),
       Timestamp::Integer(i) => *i,
     }
+  }
+}
+
+impl From<&Timestamp> for DateTime<Local> {
+  fn from(item: &Timestamp) -> Self {
+    let parsed: u64 = item.into();
+    secs_timestamp_to_datetime(parsed)
   }
 }
 
@@ -51,13 +57,13 @@ pub struct SimpleItem {
   #[serde(rename = "completionPercentage")]
   completion_percentage: u8,
   #[serde(rename = "dueDate")]
-  due_date: Option<u64>,
+  due_date: Option<Timestamp>,
   #[serde(rename = "startDate")]
-  start_date: Option<u64>,
+  start_date: Option<Timestamp>,
   #[serde(rename = "completionDate")]
-  completion_date: Option<u64>,
+  completion_date: Option<Timestamp>,
   #[serde(rename = "creationDate")]
-  creation_date: u64,
+  creation_date: Timestamp,
   timestamp: Timestamp,
   #[serde(rename = "lastModifiedTimestamp")]
   last_modified_timestamp: Timestamp,
@@ -80,17 +86,18 @@ impl SimpleItem {
   }
 
   pub fn get_start_datetime(&self) -> Option<DateTime<Local>> {
-    let t = self.start_date?;
-    Some(secs_timestamp_to_datetime(t))
+    let t = self.start_date.as_ref()?;
+    Some(secs_timestamp_to_datetime(t.into()))
   }
 
   pub fn get_due_datetime(&self) -> Option<DateTime<Local>> {
-    let t = self.due_date?;
-    Some(secs_timestamp_to_datetime(t))
+    let t = self.due_date.as_ref()?;
+    Some(secs_timestamp_to_datetime(t.into()))
   }
 
   pub fn get_creation_datetime(&self) ->DateTime<Local> {
-    secs_timestamp_to_datetime(self.creation_date)
+    let ref t = self.creation_date;
+    secs_timestamp_to_datetime(t.into())
   }
 
   pub fn get_last_modified_datetime(&self) -> DateTime<Local> {
