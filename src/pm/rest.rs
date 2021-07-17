@@ -7,6 +7,7 @@ use http::{HeaderMap, HeaderValue, StatusCode};
 use reqwest::{Response, Error};
 use crate::pm::models::me::{Me};
 use crate::pm::models::item::{SimpleItem};
+use crate::{PM_BASE};
 pub struct PMRest {
     client: reqwest::Client
 }
@@ -14,12 +15,6 @@ pub struct PMRest {
 type JSON = serde_json::Value;
 type DError = Box<dyn std::error::Error>;
 type PMRestResultUnwrapped = Result<JSON, DError>;
-
-macro_rules! PM_BASE {
-    ($path:expr) => {
-        concat!("https://sync.appfluence.com", $path);
-    };
-}
 
 impl PMRest {
     fn get_headers(token: &String) -> HeaderMap {
