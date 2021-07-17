@@ -1,4 +1,5 @@
 use serde::Deserialize;
+use std::fmt;
 use serde::de::DeserializeOwned;
 use serde_json::{Result as JSON_Result, json};
 use urlencoding::encode;
@@ -63,7 +64,7 @@ impl PMRest {
         Ok(result)
     }
 
-    pub async fn post_item(&self, text: String) -> Result<(), DError> {
+    pub async fn post_item(&self, text: String) -> Result<SimpleItem, DError> {
         let body = json!({
             "name": &text,
         });
@@ -79,6 +80,8 @@ impl PMRest {
         let res = res?;
         let t = res.text().await?;
         println!("{:?}", &t);
+
+        return Err(Box::new(AppError{}));
 
         let json: JSON = res
             .json()
@@ -181,4 +184,24 @@ impl <T: DeserializeOwned> PMObjectsResponse<T> {
     let i: Self = serde_json::from_value(json)?;
     Ok(i)
   }
+}
+
+struct AppError {} 
+
+impl std::error::Error for AppError {
+    
+}
+
+// Implement std::fmt::Display for AppError
+impl fmt::Display for AppError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "An Error Occurred, Please Try Again!") // user-facing output
+    }
+}
+
+// Implement std::fmt::Debug for AppError
+impl fmt::Debug for AppError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{{ file: {}, line: {} }}", file!(), line!()) // programmer-facing output
+    }
 }
