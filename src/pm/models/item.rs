@@ -21,7 +21,7 @@ pub struct SimpleItem {
   quadrant: u8,
   id: u64,
   idd: u64,
-  index: u64,
+  index: i64,
   state: ItemState,
   owner: Option<String>,
   owner_username: Option<String>,
