@@ -10,14 +10,14 @@ use futures::executor::block_on;
 #[tokio::main]
 async fn main() {
     let args: Vec<String> = env::args().collect();
-    let mut app = App::new(env!("CARGO_PKG_NAME"))
+    let app = App::new(env!("CARGO_PKG_NAME"))
         .description(env!("CARGO_PKG_DESCRIPTION"))
         .author(env!("CARGO_PKG_AUTHORS"))
         .version(env!("CARGO_PKG_VERSION"))
         .usage("cli [args]")
         .action(|_| println!("Welcome to pmrustcli"));
 
-    init_commands(&mut app);
+    let app = init_commands(app);
 
     app.run(args);
 }
@@ -28,7 +28,7 @@ fn get_api() -> PMRest {
     rest
 }
 
-fn init_commands(app: &mut App) {
+fn init_commands(base_app: App) -> App {
     let mut commands: Vec<Command> = vec![
      Command::new("token")
         .description("set session token")
@@ -52,9 +52,11 @@ fn init_commands(app: &mut App) {
         .action(search_action)
     ];
 
+    let mut app = base_app;
     while let Some(c) = commands.pop() {
-        app.command(c);
+        app = app.command(c);
     }
+    return app;
 }
 
 fn token_action(c: &Context) {
