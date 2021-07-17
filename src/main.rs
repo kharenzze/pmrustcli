@@ -101,6 +101,12 @@ fn alerts_action(_c: &Context) {
     let rest = get_api();
     let result = block_on(rest.get_alerts());
     let result = result.expect("Response is ready");
+    let l = result.objects.len();
+    if l == 0 {
+        println!("There are no alerts");
+    } else {
+        println!("There are {} pending alerts", l);
+    }
     for i in &result.objects {
         println!("{}", i);
     }
