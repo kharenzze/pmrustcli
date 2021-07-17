@@ -1,6 +1,6 @@
 use serde::Deserialize;
 use serde::de::DeserializeOwned;
-use serde_json::{Result as JSON_Result};
+use serde_json::{Result as JSON_Result, json};
 use urlencoding::encode;
 use std::collections::HashMap;
 use http::{HeaderMap, HeaderValue, StatusCode};
@@ -61,6 +61,31 @@ impl PMRest {
         let json: JSON = self.execute_request(&url).await?;
         let result: PMObjectsResponse<SimpleItem> = PMObjectsResponse::from_json(json)?;
         Ok(result)
+    }
+
+    pub async fn post_item(&self, text: String) -> Result<(), DError> {
+        let body = json!({
+            "name": &text,
+        });
+
+        let url = PM_BASE!("/api/v1/item");
+
+        let res = self.client.post(url)
+            .body(body.to_string())
+            .send()
+            .await;
+
+        Self::auth_check(&res);
+        let res = res?;
+        let t = res.text().await?;
+        println!("{:?}", &t);
+
+        let json: JSON = res
+            .json()
+            .await?;
+
+        let item = SimpleItem::from_json(json)?;
+        Ok(item)
     }
 
     pub async fn search(&self, text: &str) -> Result<PMObjectsResponse<SimpleItem>, DError> {

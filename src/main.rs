@@ -1,6 +1,7 @@
 mod appconfig;
 mod pm;
 
+use http::response;
 use seahorse::{App, Context, Command};
 use std::env;
 use appconfig::AppConfig;
@@ -55,6 +56,11 @@ fn init_commands(base_app: App) -> App {
         .description("Displays items that need your attention")
         .usage("cli alerts")
         .action(alerts_action),
+
+     Command::new("create")
+        .description("Creates an item in your inbox")
+        .usage("cli create \"text\"")
+        .action(create_action),
     ];
 
     let mut app = base_app;
@@ -110,4 +116,12 @@ fn alerts_action(_c: &Context) {
     for i in &result.objects {
         println!("{}", i);
     }
+} 
+
+fn create_action(c: &Context) {
+    let text: String = c.args.get(0).expect("Missing text").parse().expect("Should be an integer");
+    let rest = get_api();
+    let result = block_on(rest.post_item(text));
+    let item = result.expect("Should be created");
+    println!("{}", &item);
 } 
