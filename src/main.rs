@@ -10,16 +10,14 @@ use futures::executor::block_on;
 #[tokio::main]
 async fn main() {
     let args: Vec<String> = env::args().collect();
-    let app = App::new(env!("CARGO_PKG_NAME"))
+    let mut app = App::new(env!("CARGO_PKG_NAME"))
         .description(env!("CARGO_PKG_DESCRIPTION"))
         .author(env!("CARGO_PKG_AUTHORS"))
         .version(env!("CARGO_PKG_VERSION"))
         .usage("cli [args]")
-        .action(|_| println!("Welcome to pmrustcli"))
-        .command(me_command())
-        .command(item_command())
-        .command(search_command())
-        .command(token_command());
+        .action(|_| println!("Welcome to pmrustcli"));
+
+    init_commands(&app);
 
     app.run(args);
 }
@@ -30,12 +28,33 @@ fn get_api() -> PMRest {
     rest
 }
 
-fn token_command() -> Command {
+fn init_commands(app: &mut App) {
+    let mut commands: Vec<Command> = vec![
      Command::new("token")
         .description("set session token")
         .alias("t")
         .usage("cli token(t) [token]")
-        .action(token_action)
+        .action(token_action),
+
+     Command::new("me")
+        .description("whoami")
+        .usage("cli me")
+        .action(me_action),
+        
+     Command::new("item")
+        .description("Get an item")
+        .usage("cli item [id]")
+        .action(item_action),
+
+     Command::new("search")
+        .description("Search items by text")
+        .usage("cli search \"text\"")
+        .action(search_action)
+    ];
+
+    while let Some(c) = commands.pop() {
+        app.command(c);
+    }
 }
 
 fn token_action(c: &Context) {
@@ -46,26 +65,12 @@ fn token_action(c: &Context) {
     println!("Token saved");
 } 
 
-fn me_command() -> Command {
-     Command::new("me")
-        .description("whoami")
-        .usage("cli me")
-        .action(me_action)
-}
-
 fn me_action(_c: &Context) {
     let rest = get_api();
     let me = block_on(rest.get_me());
     let me = me.expect("Cannot decode");
     println!("{}", &me);
 } 
-
-fn item_command() -> Command {
-     Command::new("item")
-        .description("Get an item")
-        .usage("cli item [id]")
-        .action(item_action)
-}
 
 fn item_action(c: &Context) {
     let id: u64 = c.args.get(0).expect("Missing id").parse().expect("Should be an integer");
@@ -74,13 +79,6 @@ fn item_action(c: &Context) {
     let item = item.expect("Error getting item");
     item.detailed_print();
 } 
-
-fn search_command() -> Command {
-     Command::new("search")
-        .description("Search items by text")
-        .usage("cli search \"text\"")
-        .action(search_action)
-}
 
 fn search_action(c: &Context) {
     let text: String = c.args.get(0).expect("Missing text").parse().expect("Should be an integer");
