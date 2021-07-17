@@ -45,7 +45,7 @@ impl PMRest {
     }
 
     pub async fn get_item(&self, id: u64) -> Result<SimpleItem, DError> {
-        let base = PM_BASE!("/api/v1/item_summary");
+        let base = PM_BASE!("/api/v2/item_summary");
         let url = format!("{}/{}", base, id);
         let json: JSON = self.execute_request(&url).await?;
         let item = SimpleItem::from_json(json)?;
