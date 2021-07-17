@@ -104,6 +104,6 @@ impl SimpleItem {
 
 impl fmt::Display for SimpleItem {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    write!(f, "{}\t{}", &self.name, &self.get_link())
+    write!(f, "{}\t{}", &self.get_link(), &self.name)
   }
 }
