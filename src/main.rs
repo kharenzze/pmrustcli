@@ -49,7 +49,12 @@ fn init_commands(base_app: App) -> App {
      Command::new("search")
         .description("Search items by text")
         .usage("cli search \"text\"")
-        .action(search_action)
+        .action(search_action),
+
+     Command::new("alerts")
+        .description("Displays items that need your attention")
+        .usage("cli alerts")
+        .action(alerts_action),
     ];
 
     let mut app = base_app;
@@ -86,7 +91,16 @@ fn search_action(c: &Context) {
     let text: String = c.args.get(0).expect("Missing text").parse().expect("Should be an integer");
     let rest = get_api();
     let result = block_on(rest.search(&text));
-    let result = result.expect("it's an item");
+    let result = result.expect("Response is ready");
+    for i in &result.objects {
+        println!("{}", i);
+    }
+} 
+
+fn alerts_action(_c: &Context) {
+    let rest = get_api();
+    let result = block_on(rest.get_alerts());
+    let result = result.expect("Response is ready");
     for i in &result.objects {
         println!("{}", i);
     }
