@@ -17,7 +17,7 @@ async fn main() {
         .usage("cli [args]")
         .action(|_| println!("Welcome to pmrustcli"));
 
-    init_commands(&app);
+    init_commands(&mut app);
 
     app.run(args);
 }
