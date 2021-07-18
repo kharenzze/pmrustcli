@@ -1,7 +1,6 @@
 mod appconfig;
 mod pm;
 
-use http::response;
 use seahorse::{App, Context, Command};
 use std::env;
 use appconfig::AppConfig;
@@ -123,5 +122,5 @@ fn create_action(c: &Context) {
     let rest = get_api();
     let result = block_on(rest.post_item(text));
     let item = result.expect("Should be created");
-    println!("{}", &item);
+    item.detailed_print();
 } 

@@ -69,21 +69,17 @@ impl PMRest {
             "name": &text,
         });
 
-        let url = PM_BASE!("/api/v1/item");
+        let url = PM_BASE!("/api/v1/item/");
 
         let res = self.client.post(url)
             .body(body.to_string())
+            .header("content-type", HeaderValue::from_static("application/json"))
             .send()
             .await;
 
         Self::auth_check(&res);
-        let res = res?;
-        let t = res.text().await?;
-        println!("{:?}", &t);
 
-        return Err(Box::new(AppError{}));
-
-        let json: JSON = res
+        let json: JSON = res?
             .json()
             .await?;
 
@@ -188,9 +184,7 @@ impl <T: DeserializeOwned> PMObjectsResponse<T> {
 
 struct AppError {} 
 
-impl std::error::Error for AppError {
-    
-}
+impl std::error::Error for AppError {}
 
 // Implement std::fmt::Display for AppError
 impl fmt::Display for AppError {
