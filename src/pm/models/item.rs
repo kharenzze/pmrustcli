@@ -126,6 +126,7 @@ impl SimpleItem {
       }
       println!("Due {}", &due);
     }
+    println!("Link {}", &self.get_link());
   }
 }
 
